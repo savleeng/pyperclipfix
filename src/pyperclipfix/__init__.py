@@ -249,9 +249,12 @@ def init_wl_clipboard():
         args = ["wl-paste", "-n", "-t", "text"]
         if primary:
             args.append(PRIMARY_SELECTION)
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, close_fds=True)
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
         stdout, _stderr = p.communicate()
-        return stdout.decode(ENCODING)
+        output = stdout.decode(ENCODING)
+        if _stderr != None and 'Clipboard content is not available as requested type' in _stderr.decode():
+            output = ''
+        return output
 
     return copy_wl, paste_wl
 
@@ -564,19 +567,18 @@ def determine_clipboard():
         else:
             return init_osx_pyobjc_clipboard()
 
+    # For GNOME Wayland
+    # wl-clipboard causes screen flickering so we use gpaste if available
+    if 'gnome' in os.getenv('XDG_CURRENT_DESKTOP').lower() \
+            and os.environ.get("WAYLAND_DISPLAY") \
+            and _executable_exists("gpaste-client"):
+        return init_gpaste_clipboard()
     # Setup for wayland/wl-clipboard:
     if (os.environ.get("WAYLAND_DISPLAY") and _executable_exists("wl-copy")):
         return init_wl_clipboard()
 
-    # Setup for the LINUX platform:
+    # Setup for the LINUX platform (X11):
     if HAS_DISPLAY:
-        # For GNOME Wayland
-        # wl-clipboard causes screen flickering so we use gpaste if available
-        
-        if 'gnome' in os.getenv('XDG_CURRENT_DESKTOP').lower() \
-                and os.environ.get("WAYLAND_DISPLAY") \
-                and _executable_exists("gpaste-client"):
-            return init_gpaste_clipboard()
         if _executable_exists("xsel"):
             return init_xsel_clipboard()
         if _executable_exists("xclip"):
