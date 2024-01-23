@@ -14,7 +14,7 @@ with open("README.md", "r") as fh:
 setup(
     name='pyperclipfix',
     version=version,
-    url='https://github.com/asweigart/pyperclip',
+    url='https://github.com/AuroraWright/pyperclipfix',
     author='Al Sweigart and others',
     author_email='al@inventwithpython.com',
     description=('A cross-platform clipboard module for Python. (Only handles plain text for now.)'),
