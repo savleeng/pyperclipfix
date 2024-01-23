@@ -45,7 +45,7 @@ A malicious user could rename or add programs with these names, tricking
 Pyperclip into running them with whatever permissions the Python process has.
 
 """
-__version__ = '1.9.2'
+__version__ = '1.9.3'
 
 import contextlib
 import ctypes
@@ -595,7 +595,7 @@ def set_clipboard(clipboard):
     global copy, paste
 
     clipboard_types = {
-        'gpaste': init_gpaste_clipboard(),
+        "gpaste": init_gpaste_clipboard,
         "pbcopy": init_osx_pbcopy_clipboard,
         "pyobjc": init_osx_pyobjc_clipboard,
         "qt": init_qt_clipboard,  # TODO - split this into 'qtpy' and 'pyqt5'
