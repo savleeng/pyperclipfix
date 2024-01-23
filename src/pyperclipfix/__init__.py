@@ -45,7 +45,7 @@ A malicious user could rename or add programs with these names, tricking
 Pyperclip into running them with whatever permissions the Python process has.
 
 """
-__version__ = '1.9.1'
+__version__ = '1.9.2'
 
 import contextlib
 import ctypes
@@ -604,6 +604,7 @@ def set_clipboard(clipboard):
         "wl-clipboard": init_wl_clipboard,
         "klipper": init_klipper_clipboard,
         "windows": init_windows_clipboard,
+        "wsl": init_wsl_clipboard,
         "dev_clipboard": init_dev_clipboard_clipboard,
         "no": init_no_clipboard,
     }
