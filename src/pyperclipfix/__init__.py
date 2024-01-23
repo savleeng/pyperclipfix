@@ -529,7 +529,7 @@ def determine_clipboard():
     accordingly.
     '''
 
-    global Foundation, AppKit, gtk, qtpy, PyQt5
+    global Foundation, AppKit, qtpy, PyQt5
 
     # Setup for the CYGWIN platform:
     if 'cygwin' in platform.system().lower():  # Cygwin has a variety of values returned by platform.system(), such as 'CYGWIN_NT-6.1'
