@@ -287,6 +287,8 @@ def init_klipper_clipboard():
         stdout, stderr = p.communicate()
 
         clipboardContents = stdout.decode(ENCODING)
+        if clipboardContents.endswith('\n'):
+            clipboardContents = clipboardContents[:-1]
         return clipboardContents
 
     return copy_klipper, paste_klipper
