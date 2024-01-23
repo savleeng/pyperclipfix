@@ -117,7 +117,7 @@ def init_osx_pbcopy_clipboard():
 
     def paste_osx_pbcopy(errors='strict'):
         p = subprocess.Popen(['pbpaste', 'r'],
-                             stdout=subprocess.PIPE, close_fds=True)
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
         stdout, stderr = p.communicate()
         return stdout.decode(ENCODING, errors)
 
@@ -215,7 +215,7 @@ def init_xsel_clipboard():
         if primary:
             selection_flag = PRIMARY_SELECTION
         p = subprocess.Popen(['xsel', selection_flag, '-o'],
-                             stdout=subprocess.PIPE, close_fds=True)
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
         stdout, stderr = p.communicate()
         return stdout.decode(ENCODING)
 
@@ -244,10 +244,7 @@ def init_wl_clipboard():
             args.append(PRIMARY_SELECTION)
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
         stdout, _stderr = p.communicate()
-        output = stdout.decode(ENCODING)
-        if _stderr != None and 'Clipboard content is not available as requested type' in _stderr.decode():
-            output = ''
-        return output
+        return stdout.decode(ENCODING)
 
     return copy_wl, paste_wl
 
@@ -292,7 +289,7 @@ def init_klipper_clipboard():
     def paste_klipper():
         p = subprocess.Popen(
             ['qdbus', 'org.kde.klipper', '/klipper', 'getClipboardContents'],
-            stdout=subprocess.PIPE, close_fds=True)
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
         stdout, stderr = p.communicate()
 
         clipboardContents = stdout.decode(ENCODING)
