@@ -302,15 +302,7 @@ def init_klipper_clipboard():
             stdout=subprocess.PIPE, close_fds=True)
         stdout, stderr = p.communicate()
 
-        # Workaround for https://bugs.kde.org/show_bug.cgi?id=342874
-        # TODO: https://github.com/asweigart/pyperclip/issues/43
         clipboardContents = stdout.decode(ENCODING)
-        # even if blank, Klipper will append a newline at the end
-        assert len(clipboardContents) > 0
-        # make sure that newline is there
-        assert clipboardContents.endswith('\n')
-        if clipboardContents.endswith('\n'):
-            clipboardContents = clipboardContents[:-1]
         return clipboardContents
 
     return copy_klipper, paste_klipper
