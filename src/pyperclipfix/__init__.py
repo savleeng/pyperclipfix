@@ -58,12 +58,6 @@ import warnings
 
 from ctypes import c_size_t, sizeof, c_wchar_p, get_errno, c_wchar
 
-
-# `import PyQt5` sys.exit()s if DISPLAY is not in the environment.
-# Thus, we need to detect the presence of $DISPLAY manually
-# and not load PyQt5 if it is absent.
-HAS_DISPLAY = os.getenv("DISPLAY", False)
-
 EXCEPT_MSG = """
     Pyperclip could not find a copy/paste mechanism for your system.
     For more information, please visit https://pyperclip.readthedocs.io/en/latest/index.html#not-implemented-error """
@@ -541,40 +535,42 @@ def determine_clipboard():
         else:
             return init_osx_pyobjc_clipboard()
 
-    # For GNOME Wayland
-    # wl-clipboard causes screen flickering so we use gpaste if available
+    # For GNOME
     if 'gnome' in os.getenv('XDG_CURRENT_DESKTOP').lower() \
-            and os.environ.get("WAYLAND_DISPLAY") \
             and _executable_exists("gpaste-client"):
         return init_gpaste_clipboard()
-    # Setup for wayland/wl-clipboard:
+
+    # For KDE
+    if 'kde' in os.getenv('XDG_CURRENT_DESKTOP').lower() \
+            and _executable_exists("klipper") and _executable_exists("qdbus"):
+        return init_klipper_clipboard()
+
+    # For wayland (generic):
     if (os.environ.get("WAYLAND_DISPLAY") and _executable_exists("wl-copy")):
         return init_wl_clipboard()
 
-    # Setup for the LINUX platform (X11):
-    if HAS_DISPLAY:
+    # For X11 (generic):
+    if os.getenv("DISPLAY"):
         if _executable_exists("xsel"):
             return init_xsel_clipboard()
         if _executable_exists("xclip"):
             return init_xclip_clipboard()
-        if _executable_exists("klipper") and _executable_exists("qdbus"):
-            return init_klipper_clipboard()
 
-        try:
-            # qtpy is a small abstraction layer that lets you write
-            # applications using a single api call to either PyQt or PySide.
-            # https://pypi.python.org/pypi/QtPy
-            import qtpy  # check if qtpy is installed
-            return init_qt_clipboard()
-        except ImportError:
-            pass
+    try:
+        # qtpy is a small abstraction layer that lets you write
+        # applications using a single api call to either PyQt or PySide.
+        # https://pypi.python.org/pypi/QtPy
+        import qtpy  # check if qtpy is installed
+        return init_qt_clipboard()
+    except ImportError:
+        pass
 
-        # If qtpy isn't installed, fall back on importing PyQt5
-        try:
-            import PyQt5  # check if PyQt5 is installed
-            return init_qt_clipboard()
-        except ImportError:
-            pass
+    # If qtpy isn't installed, fall back on importing PyQt5
+    try:
+        import PyQt5  # check if PyQt5 is installed
+        return init_qt_clipboard()
+    except ImportError:
+        pass
 
     return init_no_clipboard()
 
@@ -606,6 +602,7 @@ def set_clipboard(clipboard):
         "wl-clipboard": init_wl_clipboard,
         "klipper": init_klipper_clipboard,
         "windows": init_windows_clipboard,
+        "dev_clipboard": init_dev_clipboard_clipboard,
         "no": init_no_clipboard,
     }
 
