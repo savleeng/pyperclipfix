@@ -537,15 +537,21 @@ def determine_clipboard():
         else:
             return init_osx_pyobjc_clipboard()
 
-    # For GNOME
-    if 'gnome' in os.getenv('XDG_CURRENT_DESKTOP').lower() \
-            and _executable_exists("gpaste-client"):
-        return init_gpaste_clipboard()
+    # Bug: When os.getenv returns None, .lower() will raise AttributeError
+    # Fix: Only proceed if None is not returned
 
-    # For KDE
-    if 'kde' in os.getenv('XDG_CURRENT_DESKTOP').lower() \
-            and _executable_exists("klipper") and _executable_exists("qdbus"):
-        return init_klipper_clipboard()
+    xdg_current_desktop = os.getenv('XDG_CURRENT_DESKTOP')
+
+    if xdg_current_desktop is not None:
+        # For GNOME
+        if 'gnome' in xdg_current_desktop.lower() \
+                and _executable_exists("gpaste-client"):
+            return init_gpaste_clipboard()
+
+        # For KDE
+        if 'kde' in xdg_current_desktop.lower() \
+                and _executable_exists("klipper") and _executable_exists("qdbus"):
+            return init_klipper_clipboard()
 
     # For wayland (generic):
     if (os.environ.get("WAYLAND_DISPLAY") and _executable_exists("wl-copy")):
