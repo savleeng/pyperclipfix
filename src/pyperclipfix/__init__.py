@@ -537,9 +537,6 @@ def determine_clipboard():
         else:
             return init_osx_pyobjc_clipboard()
 
-    # Bug: When os.getenv returns None, .lower() will raise AttributeError
-    # Fix: Only proceed if None is not returned
-
     xdg_current_desktop = os.getenv('XDG_CURRENT_DESKTOP')
 
     if xdg_current_desktop is not None:
