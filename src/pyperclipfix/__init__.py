@@ -556,11 +556,10 @@ def determine_clipboard():
 
     # For X11 (generic):
     if os.getenv("DISPLAY"):
-        if _executable_exists("xsel"):
-            return init_xsel_clipboard()
         if _executable_exists("xclip"):
             return init_xclip_clipboard()
-
+        if _executable_exists("xsel"):
+            return init_xsel_clipboard()
     try:
         # qtpy is a small abstraction layer that lets you write
         # applications using a single api call to either PyQt or PySide.
